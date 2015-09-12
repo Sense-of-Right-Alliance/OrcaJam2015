@@ -7,7 +7,7 @@ public class Bullet : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		Debug.Log ("bullet dir = " + transform.up.ToString());
+		//Debug.Log ("bullet dir = " + transform.up.ToString());
 	}
 	
 	// Update is called once per frame
