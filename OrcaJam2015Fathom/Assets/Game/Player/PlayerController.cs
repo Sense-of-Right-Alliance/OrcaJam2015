@@ -87,12 +87,14 @@ public class PlayerController : MonoBehaviour {
 		var directionPriority = directionForwards
 			.Concat(directionPriorities.Except(directionForwards).Except(directionBackwards))
 			.Concat(directionBackwards);
-		
-		nextTrack = directionPriority
-			.Select(u => currentTrack.GetNeighbour(u))
-			.OfType<Track>()
-			.Where(u => u.IsTrack())
-			.First();
+
+        var test = directionPriority.ToList();
+
+        currentDirection = directionPriority
+            .Where(u => currentTrack.GetNeighbour(u) == null ? false : currentTrack.GetNeighbour(u).IsTrack())
+            .First();
+
+        nextTrack = currentTrack.GetNeighbour(currentDirection) as Track;
 	}
 	
 	void SetRotation(Vector3 target)

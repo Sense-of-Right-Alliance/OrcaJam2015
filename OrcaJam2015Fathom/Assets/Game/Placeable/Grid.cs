@@ -97,7 +97,7 @@ public class Grid : MonoBehaviour
             rowIndex++;
         }
         InitializeTrackTypes();
-        PrintTrack();
+        //PrintTrack();
     }
 
     protected void InitializeTrackTypes()
