@@ -5,13 +5,14 @@ public class PlayerController : MonoBehaviour {
 
 	public GameObject BulletPrefab;
 	public GameObject Special;
+	public GameObject Explosion;
 	
 	public Transform FiringPoint;
 	public GameObject SpriteObject;
 	
 	public float speed = 1;
 
-	int playerId = 1;
+	public int playerId = 1;
 	// Use this for initialization
 	void Start () 
 	{
@@ -56,7 +57,7 @@ public class PlayerController : MonoBehaviour {
 	
 	void CheckFire()
 	{
-		if (Input.GetButtonDown ("A"+playerId))
+		if (Input.GetButtonDown ("A"+playerId) || Input.GetKeyDown(KeyCode.Space))
 		{
 			GameObject bullet = (GameObject)Instantiate(BulletPrefab, FiringPoint.position, SpriteObject.transform.rotation);
 		}
@@ -89,6 +90,9 @@ public class PlayerController : MonoBehaviour {
 			vert = vertThumb;
 		}
 		
+		int keyboard = CheckMovementKey ();
+		if (keyboard != -1) return keyboard;
+		
 		if (Mathf.Abs(horz) > Mathf.Abs(vert))
 		{
 			if (horz > 0.1) return 0; // right
@@ -101,13 +105,30 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	
+	public int CheckMovementKey()
+	{
+		if (Input.GetKey (KeyCode.D)) return 0;
+		else if (Input.GetKey (KeyCode.A)) return 1;
+		else if (Input.GetKey (KeyCode.S)) return 2;
+		else if (Input.GetKey (KeyCode.W)) return 3;
+		
+		return -1;
+	}
+	
 	public bool CheckPickup()
 	{
-		return Input.GetButtonDown ("X1");
+		return Input.GetButtonDown ("X1") || Input.GetKey(KeyCode.F);
+	}
+	
+	void HandleCollision()
+	{
+		Instantiate(Explosion, transform.position, transform.rotation);
+		Destroy(gameObject);
 	}
 	
 	void OnTriggerEnter2D(Collider2D other) 
 	{
-		if (other.tag == "Bullet") Destroy(gameObject);
+		Debug.Log ("collision");
+		if (other.tag == "Bullet") HandleCollision();
 	}
 }
