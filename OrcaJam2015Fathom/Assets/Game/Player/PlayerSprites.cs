@@ -6,7 +6,6 @@ using System.Linq;
 // ballbusters: legend of the silver surfer
 public class PlayerSprites : MonoBehaviour
 {
-    public int PlayerID;
     public Sprite Player1Sprite;
     public Sprite Player2Sprite;
     public Sprite Player3Sprite;
@@ -17,7 +16,8 @@ public class PlayerSprites : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        switch (PlayerID)
+        int playerID = GetComponent<PlayerController>().playerId;
+        switch (playerID)
         {
             case 1:
                 spriteRenderer.sprite = Player1Sprite;
