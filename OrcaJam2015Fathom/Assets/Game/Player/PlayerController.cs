@@ -79,6 +79,8 @@ public class PlayerController : MonoBehaviour {
 		
 		Direction desiredDirection = inputDir ?? currentDirection;
 		
+		if (inputDir == currentDirection.Reverse()) desiredDirection = currentDirection;
+		
 		currentTrack = nextTrack;
 		
 		var directionForwards = new List<Direction>() { desiredDirection };
@@ -95,6 +97,9 @@ public class PlayerController : MonoBehaviour {
             .First();
 
         nextTrack = currentTrack.GetNeighbour(currentDirection) as Track;
+        
+		var blah = string.Join(",",test.Select (u => u.ToString()).ToArray());
+		Debug.Log ("Input Dir = " + inputDir.ToString() + " Chosen Dir = " + currentDirection.ToString() + " Priorities = " + blah);
 	}
 	
 	void SetRotation(Vector3 target)
@@ -142,7 +147,7 @@ public class PlayerController : MonoBehaviour {
 		
 		// USE KEYBOARD IF KEYBOARD
 		Direction? keyboard = CheckMovementKey ();
-		if (keyboard != null) return keyboard;
+ 		if (keyboard != null) return keyboard;
 		
 		// HANDLE CONTROLLER WIZARDRY
 		if (Mathf.Abs(horz) > Mathf.Abs(vert))
@@ -151,8 +156,8 @@ public class PlayerController : MonoBehaviour {
 			else if (horz < -0.1) return Direction.West; // left
 			else return null;
 		} else {
-			if (vert > 0.1) return Direction.North; // up
-			else if (vert < -0.1) return Direction.South; // down
+			if (vert > 0.1) return Direction.South; // up
+			else if (vert < -0.1) return Direction.North; // down
 			else return null;
 		}
 	}
@@ -161,8 +166,8 @@ public class PlayerController : MonoBehaviour {
 	{
 		if (Input.GetKey (KeyCode.D)) return Direction.East;
 		else if (Input.GetKey (KeyCode.A)) return Direction.West;
-		else if (Input.GetKey (KeyCode.S)) return Direction.North;
-		else if (Input.GetKey (KeyCode.W)) return Direction.South;
+		else if (Input.GetKey (KeyCode.S)) return Direction.South;
+		else if (Input.GetKey (KeyCode.W)) return Direction.North;
 		
 		return null;
 	}

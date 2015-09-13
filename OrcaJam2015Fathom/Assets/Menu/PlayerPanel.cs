@@ -79,8 +79,8 @@ public class PlayerPanel : MonoBehaviour
 				if (Input.GetButtonDown ("A"+playerId) || (playerId == 1 && Input.GetKeyDown(KeyCode.Space))) SetState(State.Waiting);
 				break;
 			case (State.Waiting):
-				if (Input.GetButtonDown ("A"+playerId) || (playerId == 1 && Input.GetKeyDown(KeyCode.Escape))) SetState(State.Empty);
-				if (Input.GetButtonDown ("B"+playerId) || (playerId == 1 && Input.GetKeyDown(KeyCode.Space))) SetState(State.Ready);
+				if (Input.GetButtonDown ("B"+playerId) || (playerId == 1 && Input.GetKeyDown(KeyCode.Escape))) SetState(State.Empty);
+				if (Input.GetButtonDown ("A"+playerId) || (playerId == 1 && Input.GetKeyDown(KeyCode.Space))) SetState(State.Ready);
 				break;
 			case (State.Ready):
 				if (Input.GetButtonDown ("B"+playerId) || (playerId == 1 && Input.GetKeyDown(KeyCode.Escape))) SetState(State.Waiting);
