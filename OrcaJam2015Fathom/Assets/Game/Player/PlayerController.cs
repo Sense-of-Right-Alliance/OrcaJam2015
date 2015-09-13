@@ -84,7 +84,7 @@ public class PlayerController : MonoBehaviour {
 		currentTrack = nextTrack;
 		
 		var directionForwards = new List<Direction>() { desiredDirection };
-		var directionBackwards = new List<Direction>() { desiredDirection.Reverse() };
+		var directionBackwards = new List<Direction>() { currentDirection.Reverse() };
 		
 		var directionPriority = directionForwards
 			.Concat(directionPriorities.Except(directionForwards).Except(directionBackwards))
