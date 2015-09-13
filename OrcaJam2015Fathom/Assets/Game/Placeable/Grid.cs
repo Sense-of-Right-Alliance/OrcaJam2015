@@ -38,11 +38,32 @@ public class Grid : MonoBehaviour
             {
                 GameObject element;
                 Placeable placeable;
+                Track track;
                 Vector2 position = new Vector2((colIndex - height / (float)2) / (float)2, -(rowIndex - width / (float)2) / (float)2);
                 switch (character)
                 {
                     case '#':
                         element = (GameObject)Instantiate(TrackPrefab, position, transform.rotation);
+                        break;
+                    case '1':
+                        element = (GameObject)Instantiate(TrackPrefab, position, transform.rotation);
+                        track = element.GetComponent<Track>();
+                        track.SpawnPosition = 1;
+                        break;
+                    case '2':
+                        element = (GameObject)Instantiate(TrackPrefab, position, transform.rotation);
+                        track = element.GetComponent<Track>();
+                        track.SpawnPosition = 2;
+                        break;
+                    case '3':
+                        element = (GameObject)Instantiate(TrackPrefab, position, transform.rotation);
+                        track = element.GetComponent<Track>();
+                        track.SpawnPosition = 3;
+                        break;
+                    case '4':
+                        element = (GameObject)Instantiate(TrackPrefab, position, transform.rotation);
+                        track = element.GetComponent<Track>();
+                        track.SpawnPosition = 4;
                         break;
                     case 'M':
                         element = (GameObject)Instantiate(MagicianPrefab, position, transform.rotation);
@@ -196,5 +217,15 @@ public class Grid : MonoBehaviour
             return null;
 
         return Elements[y, x].GetComponent<Placeable>();
+    }
+
+    public IEnumerable<Track> GetSpawnPositions()
+    {
+        return Elements
+            .OfType<GameObject>()
+            .Select(u => u.GetComponent<Placeable>())
+            .OfType<Track>()
+            .Where(u => u != null && u.SpawnPosition != null)
+            .OrderBy(u => u.SpawnPosition);
     }
 }
