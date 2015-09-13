@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour {
 	
 	public float speed = 1;
 
-	int playerId = 1;
+	public int playerId = 1;
 	// Use this for initialization
 	void Start () 
 	{
