@@ -1,7 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour { 
+	static List<Direction> directionPriorities = new List<Direction>()
+	{
+		Direction.North,
+		Direction.East,
+		Direction.South,
+		Direction.West,
+	};
 
 	public GameObject BulletPrefab;
 	public GameObject Special;
@@ -9,6 +18,10 @@ public class PlayerController : MonoBehaviour {
 	
 	public Transform FiringPoint;
 	public GameObject SpriteObject;
+	
+	public Track currentTrack;
+	public Track nextTrack;
+	public Direction currentDirection;
 	
 	public float speed = 1;
 
@@ -19,6 +32,13 @@ public class PlayerController : MonoBehaviour {
 	
 	}
 	
+	public void InitStart(Track startTrack, Direction startDir)
+	{
+		nextTrack = startTrack;
+		currentDirection = startDir;
+		HandleArriveAtNextTrack();
+	}
+	
 	// Update is called once per frame
 	void Update () 
 	{
@@ -26,9 +46,15 @@ public class PlayerController : MonoBehaviour {
 		CheckFire();
 		CheckSpecial();
 	}
-	
+		
 	void UpdateMovement()
 	{
+		transform.Translate((nextTrack.transform.position - transform.position).normalized * speed * Time.deltaTime);
+		
+		float distance = (nextTrack.transform.position - transform.position).magnitude;
+		if (distance < 0.1f) HandleArriveAtNextTrack();
+			
+		/*
 		int inputDir = GetDir ();
 		
 		if (inputDir >= 0 && inputDir < 2)
@@ -44,7 +70,29 @@ public class PlayerController : MonoBehaviour {
 			SetRotation (dir);
 			Debug.Log ("Direction: " + dir.ToString());
 			transform.Translate(dir * speed * Time.deltaTime);
-		}
+		}*/
+	}
+	
+	public void HandleArriveAtNextTrack()
+	{
+		Direction? inputDir = GetDir();
+		
+		Direction desiredDirection = inputDir ?? currentDirection;
+		
+		currentTrack = nextTrack;
+		
+		var directionForwards = new List<Direction>() { desiredDirection };
+		var directionBackwards = new List<Direction>() { desiredDirection.Reverse() };
+		
+		var directionPriority = directionForwards
+			.Concat(directionPriorities.Except(directionForwards).Except(directionBackwards))
+			.Concat(directionBackwards);
+		
+		nextTrack = directionPriority
+			.Select(u => currentTrack.GetNeighbour(u))
+			.OfType<Track>()
+			.Where(u => u.IsTrack())
+			.First();
 	}
 	
 	void SetRotation(Vector3 target)
@@ -71,7 +119,7 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	
-	public int GetDir()
+	public Direction? GetDir()
 	{
 		float horzThumb = Input.GetAxis ("Horizontal"+playerId);
 		float vertThumb = Input.GetAxis ("Vertical"+playerId);
@@ -90,29 +138,31 @@ public class PlayerController : MonoBehaviour {
 			vert = vertThumb;
 		}
 		
-		int keyboard = CheckMovementKey ();
-		if (keyboard != -1) return keyboard;
+		// USE KEYBOARD IF KEYBOARD
+		Direction? keyboard = CheckMovementKey ();
+		if (keyboard != null) return keyboard;
 		
+		// HANDLE CONTROLLER WIZARDRY
 		if (Mathf.Abs(horz) > Mathf.Abs(vert))
 		{
-			if (horz > 0.1) return 0; // right
-			else if (horz < -0.1) return 1; // left
-			else return -1;
+			if (horz > 0.1) return Direction.East; // right
+			else if (horz < -0.1) return Direction.West; // left
+			else return null;
 		} else {
-			if (vert > 0.1) return 2; // up
-			else if (vert < -0.1) return 3; // down
-			else return -1;
+			if (vert > 0.1) return Direction.North; // up
+			else if (vert < -0.1) return Direction.South; // down
+			else return null;
 		}
 	}
 	
-	public int CheckMovementKey()
+	public Direction? CheckMovementKey()
 	{
-		if (Input.GetKey (KeyCode.D)) return 0;
-		else if (Input.GetKey (KeyCode.A)) return 1;
-		else if (Input.GetKey (KeyCode.S)) return 2;
-		else if (Input.GetKey (KeyCode.W)) return 3;
+		if (Input.GetKey (KeyCode.D)) return Direction.East;
+		else if (Input.GetKey (KeyCode.A)) return Direction.West;
+		else if (Input.GetKey (KeyCode.S)) return Direction.North;
+		else if (Input.GetKey (KeyCode.W)) return Direction.South;
 		
-		return -1;
+		return null;
 	}
 	
 	public bool CheckPickup()
