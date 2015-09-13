@@ -21,6 +21,8 @@ public class Track : Placeable
     public Direction FacingDirection { get { return facingDirection; } set { facingDirection = value; UpdateRotation(); } }
 
     public override bool IsTrack() { return true; }
+    public int? SpawnPosition { get; set; }
+    public bool IsSpawn { get; set; }
 
     protected void UpdateSprite()
     {
