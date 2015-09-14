@@ -23,15 +23,15 @@ public class PlayerController : MonoBehaviour {
     public Track nextTrack;
     public Direction currentDirection;
     
-    public float speed = 1;
+    public float speed = 0.75f;
 
-    public bool IsAlive { get; set; }
+    public bool IsAlive = true;
 
     public int playerId = 1;
     // Use this for initialization
     void Start () 
     {
-        IsAlive = true;
+    
     }
     
     public void InitStart(Track startTrack, Direction startDir)
@@ -82,6 +82,8 @@ public class PlayerController : MonoBehaviour {
     {
         Direction? inputDir = GetDir();
         
+        if (playerId == 2) Debug.Log ("P2 input dir = " + inputDir.ToString());
+        
         Direction desiredDirection = inputDir ?? currentDirection;
         
         if (inputDir == currentDirection.Reverse()) desiredDirection = currentDirection;
@@ -104,10 +106,24 @@ public class PlayerController : MonoBehaviour {
         nextTrack = currentTrack.GetNeighbour(currentDirection) as Track;
         
         var blah = string.Join(",",test.Select (u => u.ToString()).ToArray());
-        Debug.Log ("Input Dir = " + inputDir.ToString() + " Chosen Dir = " + currentDirection.ToString() + " Priorities = " + blah);
+        //Debug.Log ("Input Dir = " + inputDir.ToString() + " Chosen Dir = " + currentDirection.ToString() + " Priorities = " + blah);
+        
+		SetRotation (GetVectorFromDirection(currentDirection));
     }
     
-    void SetRotation(Vector3 target)
+	Vector3 GetVectorFromDirection(Direction d)
+	{
+		Vector3 dir = new Vector3(0,0,0);
+		
+		if (d == Direction.East) dir.x = 1;
+		if (d == Direction.West) dir.x = -1;
+		if (d == Direction.North) dir.y = 1;
+		if (d == Direction.South) dir.y = -1;
+		
+		return dir;
+	}
+	
+	void SetRotation(Vector3 target)
     {
         Vector3 vectorToTarget = target;// - SpriteObject.transform.position;
         float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
@@ -115,11 +131,15 @@ public class PlayerController : MonoBehaviour {
         SpriteObject.transform.rotation = q;//Quaternion.Slerp(transform.rotation, q, Time.deltaTime * speed);
     }
     
+    
+    
     void CheckFire()
     {
-        if (Input.GetButtonDown ("A"+playerId) || Input.GetKeyDown(KeyCode.Space))
-        {
-            GameObject bullet = (GameObject)Instantiate(BulletPrefab, FiringPoint.position, SpriteObject.transform.rotation);
+        if (Input.GetButtonDown ("A"+playerId) || (playerId == 1 && Input.GetKeyDown(KeyCode.Space)))
+        {	
+			GameObject bullet = (GameObject)Instantiate(BulletPrefab, FiringPoint.position, Quaternion.identity);
+			bullet.transform.up = GetVectorFromDirection(currentDirection);
+			bullet.GetComponent<Bullet>().InitSprite(playerId);
         }
     }
     
@@ -140,7 +160,7 @@ public class PlayerController : MonoBehaviour {
         float vertPad = Input.GetAxis ("DPadV"+playerId);
         
         float horz = horzPad;
-        float vert = vertPad;
+        float vert = vertPad*-1;
         if (Mathf.Abs (horzThumb) > Mathf.Abs(horzPad))
         {
             horz = horzThumb;
@@ -157,12 +177,12 @@ public class PlayerController : MonoBehaviour {
         // HANDLE CONTROLLER WIZARDRY
         if (Mathf.Abs(horz) > Mathf.Abs(vert))
         {
-            if (horz > 0.1) return Direction.East; // right
-            else if (horz < -0.1) return Direction.West; // left
+            if (horz > 0.05) return Direction.East; // right
+            else if (horz < -0.05) return Direction.West; // left
             else return null;
         } else {
-            if (vert > 0.1) return Direction.South; // up
-            else if (vert < -0.1) return Direction.North; // down
+            if (vert > 0.05) return Direction.South; // up
+            else if (vert < -0.05) return Direction.North; // down
             else return null;
         }
     }
@@ -184,7 +204,7 @@ public class PlayerController : MonoBehaviour {
     
     void HandleCollision()
     {
-        Instantiate(Explosion, transform.position, transform.rotation);
+        Instantiate(Explosion, new Vector3(transform.position.x, transform.position.y, -5), transform.rotation);
         KillPlayer();
     }
 
@@ -196,7 +216,6 @@ public class PlayerController : MonoBehaviour {
     
     void OnTriggerEnter2D(Collider2D other) 
     {
-        Debug.Log ("collision");
         if (other.tag == "Bullet") HandleCollision();
     }
 }

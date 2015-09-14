@@ -47,7 +47,7 @@ public class SelectMenu : MonoBehaviour
 		var panels = PlayerPanels.Select(u => u.GetComponent<PlayerPanel>());
 		GameSettings.NumPlayers = panels.Count(u => u.state == PlayerPanel.State.Ready);
 		
-		Application.LoadLevel("game_scene");
+		Application.LoadLevel("title_scene");
 	}
 	
 	bool CheckPlayersReady()

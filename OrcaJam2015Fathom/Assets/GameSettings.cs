@@ -7,4 +7,7 @@ using System.Linq;
 public class GameSettings : MonoBehaviour
 {
 	public static int NumPlayers = 1;
+	public static int WinningPlayer = -1;
+	
+	public static int GameTime = 60;
 }
