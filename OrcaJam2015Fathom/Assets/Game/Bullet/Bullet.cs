@@ -16,23 +16,28 @@ public class Bullet : MonoBehaviour
     // Use this for initialization
     void Start() {
         //Debug.Log ("bullet dir = " + transform.up.ToString());
-
-        var spriteRenderer = GetComponent<SpriteRenderer>();
-        switch (PlayerID)
-        {
-            case 1:
-                spriteRenderer.sprite = Player1Sprite;
-                break;
-            case 2:
-                spriteRenderer.sprite = Player2Sprite;
-                break;
-            case 3:
-                spriteRenderer.sprite = Player3Sprite;
-                break;
-            case 4:
-                spriteRenderer.sprite = Player4Sprite;
-                break;
-        }
+    }
+    
+    public void InitSprite(int playerId)
+    {
+    	PlayerID = playerId;
+    	
+		var spriteRenderer = GetComponent<SpriteRenderer>();
+		switch (PlayerID)
+		{
+		case 1:
+			spriteRenderer.sprite = Player1Sprite;
+			break;
+		case 2:
+			spriteRenderer.sprite = Player2Sprite;
+			break;
+		case 3:
+			spriteRenderer.sprite = Player3Sprite;
+			break;
+		case 4:
+			spriteRenderer.sprite = Player4Sprite;
+			break;
+		}
     }
 	
 	// Update is called once per frame
